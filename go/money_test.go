@@ -8,6 +8,12 @@ import (
 
 var bank s.Bank
 
+func init() {
+	bank = s.NewBank()
+	bank.AddExchangeRate("EUR", "USD", 1.2)
+	bank.AddExchangeRate("USD", "KRW", 1100)
+}
+
 func TestMultiplication(t *testing.T) {
 	tenEuros := s.NewMoney(10, "EUR")
 	actualResult := tenEuros.Times(2)
@@ -83,6 +89,26 @@ func TestAdditionWithMultipleMissingExchangeRates(t *testing.T) {
 
 	assertNil(t, value)
 	assertEqual(t, expectedErrorMessage, actualError.Error())
+}
+
+func TestConversion(t *testing.T) {
+	tenEuros := s.NewMoney(10, "EUR")
+	actualConvertedMoney, err := bank.Convert(tenEuros, "USD")
+	assertNil(t, err)
+	assertEqual(t, s.NewMoney(12, "USD"), *actualConvertedMoney)
+}
+
+func TestConversionWithMissingExchangeRate(t *testing.T) {
+	tenEuros := s.NewMoney(10, "EUR")
+	actualConvertedMoney, err := bank.Convert(tenEuros, "Kalganid")
+	assertNil(t, actualConvertedMoney)
+	assertEqual(t, "EUR->Kalganid", err.Error())
+}
+
+func assertNil(t *testing.T, actual interface{}) {
+	if actual != nil && !reflect.ValueOf(actual).IsNil() {
+		t.Errorf("Expected to be nil, found: [%+v]", actual)
+	}
 }
 
 func assertEqual(t *testing.T, expected interface{}, actual interface{}) {
