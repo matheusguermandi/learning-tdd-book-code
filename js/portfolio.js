@@ -5,7 +5,7 @@ class Portfolio {
     this.moneys = [];
   }
   add() {
-    this.moneys = this.moneys.concat(Array.prototype.slice.call(arguments));
+    this.moneys = this.moneys.concat(moneys);
   }
 
   evaluate(bank, currency) {
@@ -20,7 +20,7 @@ class Portfolio {
       }
     }, 0);
 
-    if (failures.length == 0) {
+    if (!failures.length) {
       return new Money(total, currency);
     }
     throw new Error("Missing exchange rate(s):[" + failures.join() + "]");
