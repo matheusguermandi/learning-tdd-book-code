@@ -109,6 +109,14 @@ func TestAddTwoMoneysInSameCurrency(t *testing.T) {
 	assertEqual(t, expectedValue, *actualValue)
 }
 
+func TestAddTwoMoneysInDifferentCurrencies(t *testing.T) {
+	euro := s.NewMoney(1, "EUR")
+	dollar := s.NewMoney(1, "USD")
+
+	assertNil(t, dollar.Add(&euro))
+	assertNil(t, euro.Add(&dollar))
+}
+
 func TestConversionWithDifferentRatesBetweenTwoCurrencies(t *testing.T) {
 	initExchangeRates()
 	tenEuros := s.NewMoney(10, "EUR")
