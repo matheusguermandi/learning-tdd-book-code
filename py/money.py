@@ -9,6 +9,12 @@ class Money:
     def divide(self, divisor):
         return Money(self.amount / divisor, self.currency)
 
+     def __add__(self, a):
+        if a is not None and self.currency == a.currency:
+            return Money(self.amount + a.amount, self.currency)
+        else:
+            return None
+
     def __eq__(self, other):
         return self.amount == other.amount and self.currency == other.currency
 
