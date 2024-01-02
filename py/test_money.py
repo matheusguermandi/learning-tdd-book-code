@@ -17,8 +17,9 @@ class TestMoney(unittest.TestCase):
 
     def testDivision(self):
         originalMoney = Money(4002, "KRW")
+        actualMoneyAfterDivision = originalMoney.divide(4)
         expectedMoneyAfterDivision = Money(1000.5, "KRW")
-        self.assertEqual(expectedMoneyAfterDivision, originalMoney.divide(4))
+        self.assertEqual(expectedMoneyAfterDivision, actualMoneyAfterDivision)
 
     def testAddition(self):
         fiveDollars = Money(5, "USD")
@@ -44,7 +45,7 @@ class TestMoney(unittest.TestCase):
         elevenHundredWon = Money(1100, "KRW")
         portfolio = Portfolio()
         portfolio.add(oneDollar, elevenHundredWon)
-        expectedValue = Money(2200, "KRW")  # <1>
+        expectedValue = Money(2200, "KRW")
         actualValue = portfolio.evaluate(self.bank, "KRW")
         self.assertEqual(
             expectedValue, actualValue, "%s != %s" % (expectedValue, actualValue)
@@ -64,17 +65,21 @@ class TestMoney(unittest.TestCase):
 
     def testConversionWithDifferentRatesBetweenTwoCurrencies(self):
         tenEuros = Money(10, "EUR")
-        self.assertEqual(self.bank.convert(tenEuros, "USD"), Money(12, "USD"))
+        result, missingKey = self.bank.convert(tenEuros, "USD")
+        self.assertEqual(result, Money(12, "USD"))
+        self.assertIsNone(missingKey)
 
-        self.bank.addExchangeRate("EUR", "USD", 1.3)  # <2>
-        self.assertEqual(self.bank.convert(tenEuros, "USD"), Money(13, "USD"))
+        self.bank.addExchangeRate("EUR", "USD", 1.3)
+        result, missingKey = self.bank.convert(tenEuros, "USD")
+        self.assertEqual(result, Money(13, "USD"))
+        self.assertIsNone(missingKey)
 
     def testConversionWithMissingExchangeRate(self):
         bank = Bank()
         tenEuros = Money(10, "EUR")
-        with self.assertRaisesRegex(Exception, "EUR->Kalganid"):
-            bank.convert(tenEuros, "Kalganid")
-
+        result, missingKey = self.bank.convert(tenEuros, "Kalganid")
+        self.assertIsNone(result)
+        self.assertEqual(missingKey, "EUR->Kalganid")
 
 if __name__ == "__main__":
     unittest.main()
