@@ -81,5 +81,12 @@ class TestMoney(unittest.TestCase):
         self.assertIsNone(result)
         self.assertEqual(missingKey, "EUR->Kalganid")
 
+    def testAddMoneysDirectly(self):
+        self.assertEqual(Money(15, "USD"), Money(5, "USD") + Money(10, "USD"))
+        self.assertEqual(Money(15, "USD"), Money(10, "USD") + Money(5, "USD"))
+        self.assertEqual(None, Money(5, "USD") + Money(10, "EUR"))
+        self.assertEqual(None, Money(5, "USD") + None)
+
+
 if __name__ == "__main__":
     unittest.main()
